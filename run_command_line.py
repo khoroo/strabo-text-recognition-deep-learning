@@ -211,20 +211,20 @@ def save_result(image_name, img, rst):
         dirpath, 'input.png'),os.path.join(dirpath, 'geoJson1.json'),dirpath)
 
     rst['session_id'] = session_id
-    
+
     print(os.path.join(dirpath, 'input.png'))
     print(os.path.join(dirpath, 'output.png'))
     print(os.path.join(dirpath, 'result.png'))
     print(os.path.join(dirpath, 'geoJson1.json'))
-    
+
     print("python3 text_recognition.py -i " + os.path.join(dirpath, 'input.png') +" -j " + os.path.join(dirpath, 'geoJson1.json') + " -o " + os.path.join(dirpath, 'final.txt'))
-    os.system("python3 text_recognition.py -i " + os.path.join(dirpath, 'input.png') +" -j " + os.path.join(dirpath, 'geoJson1.json') + " -o " + os.path.join(dirpath, 'final.txt'))    
+    os.system("python3 text_recognition.py -i " + os.path.join(dirpath, 'input.png') +" -j " + os.path.join(dirpath, 'geoJson1.json') + " -o " + os.path.join(dirpath, 'final.txt'))
     #os.system("mkdir /opt/straboweb")
     #path_current = "/opt/straboweb"
     #os.makedirs(path_current)
     #os.system("cp -r "+ os.path.join(dirpath, 'final.txt') + " /opt/straboweb/results/"+image_val+".json")
-    
-    
+
+
     return rst
 
 
@@ -243,13 +243,13 @@ def detectText(image_name):
     x = np.fromstring(buf, dtype='uint8')
     img = cv2.imdecode(x, 1)
     rst = get_predictor(checkpoint_path)(img)
-    
+
     rotatedplus90 = rotate_bound(img, 90)
-    rstplus90 = get_predictor(checkpoint_path)(rotatedplus90)   
+    rstplus90 = get_predictor(checkpoint_path)(rotatedplus90)
     resplus90 = rotateBox(img,rotatedplus90,rstplus90,-90)
 
     rotatedminus90 = rotate_bound(img, -90)
-    rstminus90 = get_predictor(checkpoint_path)(rotatedminus90)   
+    rstminus90 = get_predictor(checkpoint_path)(rotatedminus90)
     resminus90 = rotateBox(img,rotatedminus90,rstminus90,90)
 
     iterList = rst['text_lines']
@@ -344,13 +344,25 @@ def main():
     global checkpoint_path
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', default=8769, type=int)
-    parser.add_argument('--checkpoint-path', default=checkpoint_path)
+    parser.add_argument('--checkpoint_path', default=checkpoint_path)
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--image')
     parser.add_argument('--config')
     args = parser.parse_args()
     checkpoint_path = args.checkpoint_path
+
+    # Extra command line args added by strabo then later upset TF
+    import sys
+    pos=sys.argv.index("--image")
+    oldargs=sys.argv[:]
+    sys.argv=oldargs[:pos]+oldargs[pos+2:]
+    pos=sys.argv.index("--config")
+    oldargs=sys.argv[:]
+    sys.argv=oldargs[:pos]+oldargs[pos+2:]
+
     print(args.image)
+
+
 
     if not os.path.exists(args.checkpoint_path):
         raise RuntimeError(
