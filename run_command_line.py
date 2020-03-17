@@ -16,7 +16,7 @@ import logging
 import collections
 from pprint import pprint
 from collections import defaultdict
-from scipy.misc import toimage
+# from scipy.misc import toimage
 from scipy import ndimage
 from math import sin, cos, radians
 
