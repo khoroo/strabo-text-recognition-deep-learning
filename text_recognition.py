@@ -40,7 +40,7 @@ def text_recognition(input_image, input_json):
         text = ""
         score = 0
 
-        with PyTessBaseAPI(psm=PSM.AUTO_OSD, oem=OEM.TESSERACT_ONLY) as api:
+        with PyTessBaseAPI(psm=PSM.AUTO_OSD, oem=OEM.LSTM_ONLY) as api:
             api.SetImage(new)
             api.Recognize()
             text = api.GetUTF8Text()
